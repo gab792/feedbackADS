@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  postgres:
+
+    build:
+      context: ./docker/postgres
+
+    environment:
+      POSTGRES_USER: admin  # Nome de usuário administrativo do banco de dados
+      POSTGRES_PASSWORD: admin_password  # Senha do usuário administrativo
+      POSTGRES_DB: satisfaction_survey  # Nome do banco de dados que será criado automaticamente
+    networks:
+      - survey-network
+
+  mongodb:
+
+    build:
+      context: ./docker/mongodb
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin  # Nome de usuário administrativo do MongoDB
+      MONGO_INITDB_ROOT_PASSWORD: admin_password  # Senha do usuário administrativo
+    
+    networks:
+      - survey-network
+
+  
+  nodejs:
+    
+    build:
+      context: ./docker/nodejs
+    
+    ports:
+      - "3000:3000"
+    
+    depends_on:
+      - postgres
+      - mongodb
+    
+    networks:
+      - survey-network
+
+networks:
+  survey-network:
+    driver: bridge  # Usa o driver de rede "bridge" para comunicação entre os containers
